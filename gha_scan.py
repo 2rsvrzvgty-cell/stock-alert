@@ -124,9 +124,8 @@ def main():
                 hits.append({"code": code, "name": name, "px": px,
                              "sigs": sigs, "stop": risk.get("stop") if risk else None,
                              "ma50": risk.get("ma50") if risk else None})
-            if DRY:
-                print("  %s %s 现价=%.2f 信号=%s" % (code, name, px,
-                      "；".join(s["text"] for s in sigs) if sigs else "无"))
+            print("  %s %s 现价=%.2f 信号=%s" % (code, name, px,
+                  "；".join(s["text"] for s in sigs) if sigs else "无"))
         except Exception as e:
             print("  异常:", code, name, repr(e)[:80])
 
@@ -158,6 +157,8 @@ def main():
         return 1
 
     if hits or cfg.get("push_on_clear", False):
+        print("推送标题:", title)
+        print("推送内容:\n" + desp)
         r = push_serverchan(sckey, title, desp)
         print("推送结果:", r)
     else:
