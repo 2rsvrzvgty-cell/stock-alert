@@ -146,6 +146,21 @@ def main():
                                  "text": "缩量回踩买点区 MA50 %.2f（现价 %.2f，量比 %.2f）" % (ma50, px, vol_ratio)})
                 elif DRY:
                     print("    [买入区被过滤] %s 量比=%.2f market=%s" % (name, vol_ratio, market_on))
+            # 做T提醒（仅 level=core 持仓股）：近5日平均振幅推定当日低吸/高抛区，触及才报
+            if meta.get("level") == "core" and len(bars) >= 6:
+                amps = [(b["high"] - b["low"]) / b["close"] for b in bars[-5:] if b.get("close")]
+                avg_amp = (sum(amps) / len(amps)) if amps else 0.02
+                prev_close = bars[-2]["close"]
+                buy_ref = prev_close * (1 - avg_amp)
+                sell_ref = prev_close * (1 + avg_amp)
+                if px <= buy_ref * 1.01:
+                    sigs.append({"type": "t0_buy", "level": "做T买点",
+                                 "text": "做T低吸区 %.2f（昨收 %.2f，振幅 %.1f%%），现价 %.2f 已到低吸位" %
+                                 (buy_ref, prev_close, avg_amp * 100, px)})
+                elif px >= sell_ref * 0.99:
+                    sigs.append({"type": "t0_sell", "level": "做T卖点",
+                                 "text": "做T高抛区 %.2f（昨收 %.2f，振幅 %.1f%%），现价 %.2f 已到高抛位" %
+                                 (sell_ref, prev_close, avg_amp * 100, px)})
             if sigs:
                 hits.append({"code": code, "name": name, "px": px,
                              "sigs": sigs, "stop": risk.get("stop") if risk else None,
