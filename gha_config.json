@@ -1,14 +1,45 @@
 {
   "watchlist": {
-    "sz300142": {"name": "沃森生物", "level": "core"},
-    "sh600428": {"name": "中远海特", "level": "watch"},
-    "sz002141": {"name": "贤丰控股", "level": "watch"},
-    "sz300759": {"name": "康龙化成", "level": "watch"},
-    "sz002832": {"name": "比音勒芬", "level": "watch"},
-    "sh603129": {"name": "春风动力", "level": "watch"},
-    "sh603259": {"name": "药明康德", "level": "watch"},
-    "sz002415": {"name": "海康威视", "level": "watch"},
-    "sz000333": {"name": "美的集团", "level": "watch"}
+    "sz300142": {
+      "name": "沃森生物",
+      "level": "core"
+    },
+    "sh600428": {
+      "name": "中远海特",
+      "level": "watch"
+    },
+    "sz002141": {
+      "name": "贤丰控股",
+      "level": "watch"
+    },
+    "sz300759": {
+      "name": "康龙化成",
+      "level": "watch"
+    },
+    "sz002832": {
+      "name": "比音勒芬",
+      "level": "watch"
+    },
+    "sh603129": {
+      "name": "春风动力",
+      "level": "watch"
+    },
+    "sh603259": {
+      "name": "药明康德",
+      "level": "watch"
+    },
+    "sz002415": {
+      "name": "海康威视",
+      "level": "watch"
+    },
+    "sz000333": {
+      "name": "美的集团",
+      "level": "watch"
+    },
+    "sh601012": {
+      "name": "隆基绿能",
+      "level": "watch"
+    }
   },
   "push_on_clear": false,
   "title": "多倍策略预警"
