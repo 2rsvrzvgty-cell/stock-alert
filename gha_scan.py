@@ -109,6 +109,21 @@ def main():
     if DRY:
         print("[dry-run] watchlist 数量:", len(wl))
 
+    # 大盘过滤：上证指数收盘是否站上 MA200（risk_on 才报买入区，风险信号不受限）
+    market_on = True
+    try:
+        ib = fetch_daily("sh000001", 260)
+        if ib and len(ib) >= 200:
+            closes = [b["close"] for b in ib]
+            ma200 = sum(closes[-200:]) / 200
+            market_on = closes[-1] > ma200
+            print("大盘: 上证 %.2f vs MA200 %.2f -> %s" % (closes[-1], ma200,
+                  "risk_on(可报买点)" if market_on else "risk_off(只报风险)"))
+        else:
+            print("大盘: 指数数据不足，买入区默认放行")
+    except Exception as e:
+        print("大盘: 获取失败 %s，买入区默认放行" % repr(e)[:50])
+
     hits = []
     for code, meta in wl.items():
         name = meta.get("name", code)
@@ -120,6 +135,17 @@ def main():
             risk = sc.risk_factors(bars)
             sigs = sc.callback_signals(bars, risk)
             px = bars[-1]["close"]
+            # 买入区提醒：回踩 MA50±3% + 缩量(量比<1) + 大盘 risk_on 三重共振才报
+            buy_on = cfg.get("buy_zone", True)
+            ma50 = risk.get("ma50") if risk else None
+            vols = [b.get("volume", 0) for b in bars[-20:]]
+            vol_ratio = (sum(vols[-5:]) / 5) / (sum(vols) / 20) if vols and sum(vols) else 1
+            if buy_on and ma50 and ma50 * 0.97 <= px <= ma50 * 1.03:
+                if vol_ratio < 1.0 and market_on:
+                    sigs.append({"type": "buy_zone", "level": "买入提示",
+                                 "text": "缩量回踩买点区 MA50 %.2f（现价 %.2f，量比 %.2f）" % (ma50, px, vol_ratio)})
+                elif DRY:
+                    print("    [买入区被过滤] %s 量比=%.2f market=%s" % (name, vol_ratio, market_on))
             if sigs:
                 hits.append({"code": code, "name": name, "px": px,
                              "sigs": sigs, "stop": risk.get("stop") if risk else None,
