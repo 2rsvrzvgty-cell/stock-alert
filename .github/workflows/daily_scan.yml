@@ -2,9 +2,12 @@ name: daily_scan
 
 on:
   schedule:
-    # UTC 07:40 = 北京时间 15:40（A 股收盘后，周一到周五）
-    - cron: '40 7 * * 1-5'
-  workflow_dispatch:   # 支持在 GitHub 网页上手动触发
+    # 以下均为北京时间（GitHub cron 用 UTC，已减 8 小时）
+    - cron: '30 2 * * 1-5'    # 10:30 上午盘中
+    - cron: '30 5 * * 1-5'    # 13:30 下午开盘
+    - cron: '30 6 * * 1-5'    # 14:30 尾盘前
+    - cron: '40 7 * * 1-5'    # 15:40 收盘确认
+  workflow_dispatch:
 
 jobs:
   scan:
